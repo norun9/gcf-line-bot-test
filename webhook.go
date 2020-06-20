@@ -29,6 +29,10 @@ func init() {
 		log.Fatal("failed decrypt secrets", err)
 		return
 	}
+	if err := json.Unmarshal(secretsJson, &secrets); err != nil {
+		log.Fatal("failed json unmarshal secrets", err)
+		return
+	}
 }
 
 func lineSecretsKmsKeyName() string {
