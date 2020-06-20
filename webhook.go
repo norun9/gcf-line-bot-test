@@ -53,9 +53,13 @@ func Webhook(w http.ResponseWriter, r *http.Request) {
 		case linebot.EventTypeMessage:
 			message := linebot.NewTextMessage("Test")
 			_, err := client.ReplyMessage(event.ReplyToken, message).Do()
-			
+			if err != nil {
+				log.Println(err)
+				continue
+			}
 		}
 	}
+	fmt.Fprintln(w, "OK")
 }
 
 func lineSecretsKmsKeyName() string {
