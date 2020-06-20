@@ -1,4 +1,4 @@
-package linebot
+package main
 
 import (
 	cloudkms "cloud.google.com/go/kms/apiv1"
@@ -35,32 +35,33 @@ func init() {
 	}
 }
 
-func Webhook(w http.ResponseWriter, r *http.Request) {
+func main() {
 	client, err := linebot.New(secrets.LineChannelSecret, secrets.LineChannelAccessToken)
 	if err != nil {
-		http.Error(w, "Error init client", http.StatusBadRequest)
 		log.Fatal(err)
-		return
 	}
-	events, err := client.ParseRequest(r)
-	if err != nil {
-		http.Error(w, "Error parse request", http.StatusBadRequest)
-		log.Fatal(err)
-		return
-	}
-	for _, event := range events {
-		switch event.Type {
-		case linebot.EventTypeMessage:
-			message := linebot.NewTextMessage("Test")
-			_, err := client.ReplyMessage(event.ReplyToken, message).Do()
-			if err != nil {
-				log.Println(err)
-				continue
+	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		events, err := client.ParseRequest(r)
+		if err != nil {
+			http.Error(w, "Error parse request", http.StatusBadRequest)
+			log.Fatal(err)
+			return
+		}
+		for _, event := range events {
+			switch event.Type {
+			case linebot.EventTypeMessage:
+				message := linebot.NewTextMessage("Test")
+				_, err := client.ReplyMessage(event.ReplyToken, message).Do()
+				if err != nil {
+					log.Println(err)
+					continue
+				}
 			}
 		}
-	}
-	fmt.Fprintln(w, "OK")
+		fmt.Fprintln(w, "OK")
+	})
 }
+
 
 func lineSecretsKmsKeyName() string {
 	prjID := os.Getenv("GCP_PROJECT_ID")
