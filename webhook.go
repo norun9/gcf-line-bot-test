@@ -28,7 +28,10 @@ type Secrets struct {
 //}
 
 func lineSecretsKmsKeyName() string {
-
+	prjID := os.Getenv("GCP_PROJECT_ID")
+	keyRingName :=os.Getenv("KMS_KEY_RING_NAME")
+	keyName := os.Getenv("KMS_LINE_SECRETS_KEY_NAME")
+	return fmt.Sprintf("projects/%s/locations/global/keyRings/%s/cryptoKeys/%s", prjID, keyRingName, keyName)
 }
 
 func decryptLineSecrets() ([]byte, error) {
