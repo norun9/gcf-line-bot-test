@@ -23,9 +23,13 @@ type Secrets struct {
 	LineChannelAccessToken string `json:"line_channel_access_token"`
 }
 
-//func init() {
-//	secretsJson, err :=
-//}
+func init() {
+	secretsJson, err := decryptLineSecrets()
+	if err != nil {
+		log.Fatal("failed decrypt secrets", err)
+		return
+	}
+}
 
 func lineSecretsKmsKeyName() string {
 	prjID := os.Getenv("GCP_PROJECT_ID")
